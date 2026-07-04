@@ -1,5 +1,0 @@
-Write a subquery to find employees who earn less than the average salary of the company.
-Write a correlated subquery to find the highest-paid employee in each department.
-Using CONCAT() and UPPER(), produce a column showing each employee's name in all caps followed by their department in brackets — e.g. MOHAN (Admin).
-Use CHARINDEX() to find employees whose name contains the letter 'e'.
-Write a stored procedure GetEmployeesAboveSalary that takes a @MinSalary INT parameter and returns all employees earning more than that amount.
