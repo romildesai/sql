@@ -1,0 +1,69 @@
+-- From the String Functions / Subqueries script:
+--------------------------------------------------------------------------------------------------------------------------------------------
+1.Write a subquery to find employees who earn less than the average salary of the company.
+  select emp_name,salary
+from employee
+where salary < (select avg(salary)from employee);
+--------------------------------------------------------------------------------------------------------------------------------------------
+2.Write a correlated subquery to find the highest-paid employee in each department.
+  select emp_name,salary,dept_name
+FROM employee e
+where salary  = (select max(salary)from employee where dept_name = e.dept_name);
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+3.Using CONCAT() and UPPER(), produce a column showing each employees name in all caps followed by their department in brackets— e.g. MOHAN  (Admin).
+
+  select emp_name,dept_name,
+concat(upper(emp_name),'(',dept_name,')') as name_dept
+from employee;
+--------------------------------------------------------------------------------------------------------------------------------------------
+4.Use CHARINDEX() to find employees whose name contains the letter 'e'.
+   SELECT emp_name
+FROM employee
+WHERE CHARINDEX('e', emp_name) > 0;
+--------------------------------------------------------------------------------------------------------------------------------------------
+5.Write a stored procedure GetEmployeesAboveSalary that takes a @MinSalary INT parameter and returns all employees earning more than that amount.
+  create procedure GetEmployeesAboveSalary
+    @MINSalary INT
+AS
+BEGIN
+    SELECT EMP_NAME,SALARY
+    FROM EMPLOYEE
+    WHERE SALARY > @MINSalary;
+END;
+
+EXEC GetEmployeesAboveSalary @MINSalary = 2000;
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+-- From the Window Functions script:
+--------------------------------------------------------------------------------------------------------------------------------------------
+1.Write a query to show, for each employee, the minimum salary in their department alongside their own row.
+  select e. * ,min(salary) over(partition by dept_name) as min_salary
+from employee e;
+--------------------------------------------------------------------------------------------------------------------------------------------
+2.Using ROW_NUMBER(), fetch the last employee to join each department.(doubt)
+  select * from(select emp_name,dept_name,
+row_number()over(partition by dept_name order by emp_id)as row_N
+from employee) x where x.row_N >2;
+--------------------------------------------------------------------------------------------------------------------------------------------
+3.Write a query using DENSE_RANK() to fetch employees with the top 2 distinct salary levels in each department.
+  SELECT *
+FROM(
+    SELECT distinct E.*, 
+    DENSE_RANK() OVER(PARTITION BY DEPT_NAME ORDER BY SALARY DESC) AS DENSE_RNK
+    FROM EMPLOYEE E ) X
+    WHERE X.DENSE_RNK <=2;
+--------------------------------------------------------------------------------------------------------------------------------------------
+4.Using LEAD(), write a query that shows whether each employees salary is higher, lower, or the same as the next employee in their department.
+  SELECT E.*, 
+lag(salary) OVER(PARTITION BY DEPT_NAME ORDER BY emp_id) AS prev_emp_salary,
+CASE WHEN E.SALARY > lag(salary) OVER(PARTITION BY DEPT_NAME ORDER BY emp_id) THEN 'Higher than previous employee'
+     WHEN E.SALARY < lag(salary) OVER(PARTITION BY DEPT_NAME ORDER BY emp_id) THEN 'Lower than previous employee'
+     WHEN E.SALARY = lag(salary) OVER(PARTITION BY DEPT_NAME ORDER BY emp_id) THEN 'Same as previous employee'
+     END SAL_RANGE
+FROM EMPLOYEE E;
+--------------------------------------------------------------------------------------------------------------------------------------------
+5.Combine PARTITION BY dept_name with COUNT(*) OVER(PARTITION BY dept_name) to show, on every row, how many employees are in that employees department.
+  select count(emp_id)over(partition by dept_name) as total_emp from employee;
+
+--------------------------------------------------------------------------------------------------------------------------------------------
