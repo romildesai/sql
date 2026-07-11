@@ -3,3 +3,42 @@ FROM city c
 INNER JOIN country co
 on c.CountryCode = co.Code
 WHERE continent = 'Asia';
+
+2.select C.name
+from city c
+INNER join country co
+on C.CountryCode = CO.Code
+where continent = 'africa'; 
+
+3.
+
+4.SELECT
+    CASE 
+        WHEN g.Grade >= 8 THEN s.Name
+        ELSE NULL
+    END AS Name,
+    g.Grade,
+    s.Marks
+FROM Students s
+INNER JOIN Grades g
+    ON s.Marks BETWEEN g.Min_Mark AND g.Max_Mark
+ORDER BY
+    g.Grade DESC,
+    CASE WHEN g.Grade >= 8 THEN s.Name END ASC,
+    CASE WHEN g.Grade < 8 THEN s.Marks END ASC;
+
+6.SELECT w.id,
+       wp.age,
+       w.coins_needed,
+       w.power
+FROM Wands w
+JOIN Wands_Property wp
+ON w.code = wp.code
+WHERE wp.is_evil = 0 AND w.coins_needed = 
+(SELECT MIN(w2.coins_needed)
+FROM Wands w2 
+JOIN Wands_Property wp2
+    on w2.code = wp2.code
+   where  wp2.age = wp.age
+        AND w2.power = w.power)
+    ORDER BY w.power DESC, wp.age DESC;;
